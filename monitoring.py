@@ -2,8 +2,7 @@ import os
 import re
 import google.generativeai as genai
 import requests
-from datetime import datetime, timedelta
-from collections import defaultdict
+from datetime import datetime, timedelta, timezone # <-- PERUBAHAN 1
 
 # --- 1. KONFIGURASI ---
 # (Ubah nilai-nilai ini sesuai kebutuhan Anda)
@@ -16,7 +15,6 @@ GEMINI_API_KEY = 'AIzaSyB313YmSSuxbSOAyROB47mDIcAM4wAuwFw'
 FONNTE_API_TOKEN = 'dYQYc6sh8isQV5riYk72'     
 YOUR_PHONE_NUMBER = '6282399803221'
 
-# --- PERUBAHAN 1: LOG_PATTERN DIMODIFIKASI ---
 # Pola ini sekarang mencari format waktu ISO 8601 ('2025-11-10T...F')
 # dan teks 'Failed password'
 LOG_PATTERN = re.compile(
@@ -83,7 +81,6 @@ def send_whatsapp_notification(message):
 
 # --- 3. FUNGSI UTAMA (MAIN) ---
 
-# --- PERUBAHAN 2: FUNGSI parse_log_time DIMODIFIKASI ---
 def parse_log_time(timestamp_str):
     """DIPERBAIKI: Mengubah format waktu log (ISO 8601) ke objek datetime."""
     # timestamp_str akan terlihat seperti: '2025-11-10T14:47:04.034565+00:00'
@@ -95,7 +92,8 @@ def main():
     gemini_model = setup_gemini()
     
     # Ambil waktu sekarang dalam UTC, karena log Anda dalam UTC (+00:00)
-    time_threshold = datetime.now(datetime.timezone.utc) - timedelta(minutes=TIME_WINDOW_MINUTES)
+    # --- PERUBAHAN 2: sintaks timezone.utc diperbaiki ---
+    time_threshold = datetime.now(timezone.utc) - timedelta(minutes=TIME_WINDOW_MINUTES)
     
     ip_failures = defaultdict(int)
     ip_log_entries = defaultdict(list)
@@ -152,3 +150,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
