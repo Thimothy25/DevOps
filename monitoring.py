@@ -24,10 +24,8 @@ GEMINI_API_KEY = 'AIzaSyB313YmSSuxbSOAyROB47mDIcAM4wAuwFw'
 FONNTE_API_TOKEN = 'dYQYc6sh8isQV5riYk72'     
 YOUR_PHONE_NUMBER = '6282399803221'
 
-# --- PERUBAHAN 1: LOG_PATTERN DIMODIFIKASI ---
-# Pola ini sekarang mencari 'Permission denied' dan format waktu 'Nov 10 14:26:56'
 LOG_PATTERN = re.compile(
-    r'(\w{3}\s+\d+\s+\d{2}:\d{2}:\d{2}).*sshd\[\d+\]: Permission denied.*from ([\d\.]+) port'
+    r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}).*sshd\[\d+\]: Failed password .* from ([\d\.]+) port'
 )
 
 # --- 2. FUNGSI API (GEMINI & FONNTE) ---
@@ -90,26 +88,10 @@ def send_whatsapp_notification(message):
 
 # --- 3. FUNGSI UTAMA (MAIN) ---
 
-# --- PERUBAHAN 2: FUNGSI parse_log_time DIMODIFIKASI ---
 def parse_log_time(timestamp_str):
-    """DIPERBAIKI: Mengubah format waktu log ('Nov 10 14:26:56') ke objek datetime."""
-    try:
-        # timestamp_str akan terlihat seperti: 'Nov 10 14:26:56'
-        log_time_obj = datetime.strptime(timestamp_str, '%b %d %H:%M:%S')
-        
-        # Tambahkan tahun saat ini, karena log tidak menyertakannya
-        current_year = datetime.now().year
-        log_time = log_time_obj.replace(year=current_year)
-        
-        # Penanganan jika log berasal dari akhir tahun lalu (misal: cek log Des di Jan)
-        if log_time > datetime.now():
-             log_time = log_time.replace(year=current_year - 1)
-             
-        return log_time
-    except ValueError:
-        print(f"Gagal mem-parsing waktu: {timestamp_str}")
-        # Kembalikan waktu di masa lalu agar tidak terhitung
-        return datetime.now() - timedelta(days=1)
+    """DIPERBAIKI: Mengubah format waktu log (ISO 8601) ke objek datetime."""
+    # timestamp_str akan terlihat seperti: '2025-11-10T12:46:20'
+    return datetime.fromisoformat(timestamp_str)
 
 def main():
     print(f"Memulai monitor SSH pada {datetime.now()}...")
@@ -169,7 +151,7 @@ def main():
 
     if not alert_triggered:
         # DIPERBAIKI: Pesan log lebih jelas
-        print(f"Sistem aman aja coy. Tidak ada IP yang melampaui ambang batas {FAILURE_THRESHOLD} percobaan.")
+        print(f"Sistem aman. Tidak ada IP yang melampaui ambang batas {FAILURE_THRESHOLD} percobaan.")
 
 if __name__ == "__main__":
     main()
