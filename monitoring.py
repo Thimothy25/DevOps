@@ -7,16 +7,8 @@ from collections import defaultdict
 
 # --- 1. KONFIGURASI ---
 # (Ubah nilai-nilai ini sesuai kebutuhan Anda)
-
-# Lokasi file log SSH
-# Ubuntu/Debian: '/var/log/auth.log'
-# CentOS/RHEL/Fedora: '/var/log/secure'
 LOG_FILE_PATH = '/var/log/auth.log' 
-
-# Jendela waktu untuk diperiksa (dalam menit)
 TIME_WINDOW_MINUTES = 5
-
-# Ambang batas kegagalan sebelum memicu peringatan
 FAILURE_THRESHOLD = 2
 
 # Kunci API dan Konfigurasi
@@ -24,9 +16,11 @@ GEMINI_API_KEY = 'AIzaSyB313YmSSuxbSOAyROB47mDIcAM4wAuwFw'
 FONNTE_API_TOKEN = 'dYQYc6sh8isQV5riYk72'     
 YOUR_PHONE_NUMBER = '6282399803221'
 
+# --- PERUBAHAN 1: LOG_PATTERN DIMODIFIKASI ---
+# Pola ini sekarang mencari format waktu ISO 8601 ('2025-11-10T...F')
+# dan teks 'Failed password'
 LOG_PATTERN = re.compile(
-    # Pola ini mencari 'Failed password' dan format waktu 'Nov 10 14:26:56'
-    r'(\w{3}\s+\d+\s+\d{2}:\d{2}:\d{2}).*sshd\[\d+\]: Failed password.*from ([\d\.]+) port'
+    r'([\dT:\.\+\-]+)\s+\S+\s+sshd\[\d+\]: Failed password .* from ([\d\.]+) port'
 )
 
 # --- 2. FUNGSI API (GEMINI & FONNTE) ---
@@ -89,16 +83,19 @@ def send_whatsapp_notification(message):
 
 # --- 3. FUNGSI UTAMA (MAIN) ---
 
+# --- PERUBAHAN 2: FUNGSI parse_log_time DIMODIFIKASI ---
 def parse_log_time(timestamp_str):
     """DIPERBAIKI: Mengubah format waktu log (ISO 8601) ke objek datetime."""
-    # timestamp_str akan terlihat seperti: '2025-11-10T12:46:20'
+    # timestamp_str akan terlihat seperti: '2025-11-10T14:47:04.034565+00:00'
     return datetime.fromisoformat(timestamp_str)
+
 
 def main():
     print(f"Memulai monitor SSH pada {datetime.now()}...")
     gemini_model = setup_gemini()
     
-    time_threshold = datetime.now() - timedelta(minutes=TIME_WINDOW_MINUTES)
+    # Ambil waktu sekarang dalam UTC, karena log Anda dalam UTC (+00:00)
+    time_threshold = datetime.now(datetime.timezone.utc) - timedelta(minutes=TIME_WINDOW_MINUTES)
     
     ip_failures = defaultdict(int)
     ip_log_entries = defaultdict(list)
@@ -151,7 +148,6 @@ def main():
             send_whatsapp_notification(final_message)
 
     if not alert_triggered:
-        # DIPERBAIKI: Pesan log lebih jelas
         print(f"Sistem aman. Tidak ada IP yang melampaui ambang batas {FAILURE_THRESHOLD} percobaan.")
 
 if __name__ == "__main__":
