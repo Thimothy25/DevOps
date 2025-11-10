@@ -153,5 +153,5 @@ def main():
         # DIPERBAIKI: Pesan log lebih jelas
         print(f"Sistem aman aja coy. Tidak ada IP yang melampaui ambang batas {FAILURE_THRESHOLD} percobaan.")
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
