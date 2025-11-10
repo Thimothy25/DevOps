@@ -25,7 +25,8 @@ FONNTE_API_TOKEN = 'dYQYc6sh8isQV5riYk72'
 YOUR_PHONE_NUMBER = '6282399803221'
 
 LOG_PATTERN = re.compile(
-    r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}).*sshd\[\d+\]: Failed password .* from ([\d\.]+) port'
+    # Pola ini mencari 'Failed password' dan format waktu 'Nov 10 14:26:56'
+    r'(\w{3}\s+\d+\s+\d{2}:\d{2}:\d{2}).*sshd\[\d+\]: Failed password.*from ([\d\.]+) port'
 )
 
 # --- 2. FUNGSI API (GEMINI & FONNTE) ---
