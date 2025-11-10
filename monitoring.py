@@ -2,7 +2,8 @@ import os
 import re
 import google.generativeai as genai
 import requests
-from datetime import datetime, timedelta, timezone # <-- PERUBAHAN 1
+from datetime import datetime, timedelta, timezone
+from collections import defaultdict # <-- PERBAIKAN: Ini baris yang hilang
 
 # --- 1. KONFIGURASI ---
 # (Ubah nilai-nilai ini sesuai kebutuhan Anda)
@@ -92,7 +93,6 @@ def main():
     gemini_model = setup_gemini()
     
     # Ambil waktu sekarang dalam UTC, karena log Anda dalam UTC (+00:00)
-    # --- PERUBAHAN 2: sintaks timezone.utc diperbaiki ---
     time_threshold = datetime.now(timezone.utc) - timedelta(minutes=TIME_WINDOW_MINUTES)
     
     ip_failures = defaultdict(int)
@@ -150,4 +150,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
