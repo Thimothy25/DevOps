@@ -8,6 +8,29 @@ This repository contains a Python-based monitoring tool designed to track the he
 
 Instead of manual server checks, this tool automates the process of retrieving vital metrics (CPU usage, RAM, Disk space, Service status) and presents them in a user-friendly format.
 
+## ✨ Key Features
+Remote Monitoring: Connects to multiple servers securely using SSH (via paramiko or similar libraries).
+
+Metric Collection: Automatically fetches CPU load, Memory usage, Disk storage, and Uptime.
+
+Web Dashboard: Real-time visual representation of server health via monitoring_web.py.
+
+## Jenkins Automation:
+
+Automated periodic checks (Cron-like scheduling).
+
+Alert triggering on failure.
+
+CI/CD pipeline integration.
+
+## 🚀 Getting Started
+Prerequisites
+Python 3.x installed.
+
+Jenkins Server up and running.
+
+SSH Access (Private/Public keys) to the target servers.
+
 ## 📂 Project Structure
 
 ```text
